@@ -5,6 +5,7 @@ import About from './pages/About'
 import Businesses from './pages/Businesses'
 import BusinessPage from './pages/BusinessPage'
 import PortalPage from './pages/PortalPage'
+import CreditAudit from './pages/CreditAudit'
 
 export default function App() {
   return (
@@ -14,6 +15,7 @@ export default function App() {
         <Route path="about" element={<About />} />
         <Route path="businesses" element={<Businesses />} />
         <Route path="businesses/:slug" element={<BusinessPage />} />
+        <Route path="free-credit-audit" element={<CreditAudit />} />
         {/* gated portals: short standalone links, entry form first */}
         <Route path="barber" element={<PortalPage slug="barber" />} />
         <Route path="collabs" element={<PortalPage slug="collabs" />} />

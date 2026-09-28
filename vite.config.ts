@@ -77,8 +77,64 @@ function usdJpyApi(): Plugin {
   }
 }
 
+// /api/credit-lead — the free-credit-audit form (src/components/CreditLeadForm.tsx).
+// DEV/LOCAL SINK ONLY: validated leads are appended to ../leads/credit-leads.jsonl (gitignored).
+// On Lovable this must become a Supabase table + edge function, with its own notification.
+function creditLeadApi(): Plugin {
+  const LEADS = fileURLToPath(new URL('../leads/credit-leads.jsonl', import.meta.url))
+  const handler = async (req: import('node:http').IncomingMessage, res: import('node:http').ServerResponse, next: () => void) => {
+    if (!req.url?.startsWith('/api/credit-lead')) return next()
+    res.setHeader('Content-Type', 'application/json')
+    if (req.method !== 'POST') {
+      res.statusCode = 405
+      return res.end(JSON.stringify({ error: 'POST only' }))
+    }
+    let raw = ''
+    for await (const chunk of req) {
+      raw += chunk
+      if (raw.length > 10_000) break
+    }
+    let body: Record<string, unknown> = {}
+    try {
+      body = JSON.parse(raw)
+    } catch {
+      /* invalid JSON falls through to validation */
+    }
+    const str = (k: string, max: number) => String(body[k] ?? '').trim().slice(0, max)
+    const lead = {
+      firstName: str('firstName', 22),
+      lastName: str('lastName', 22),
+      email: str('email', 120).toLowerCase(),
+      phone: str('phone', 20).replace(/\D/g, ''),
+    }
+    const errors: string[] = []
+    if (!lead.firstName) errors.push('firstName')
+    if (!lead.lastName) errors.push('lastName')
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(lead.email)) errors.push('email')
+    if (lead.phone.length !== 10) errors.push('phone')
+    if (str('company', 200)) {
+      // honeypot filled in: pretend success, store nothing
+      return res.end(JSON.stringify({ ok: true }))
+    }
+    if (errors.length) {
+      res.statusCode = 400
+      return res.end(JSON.stringify({ error: 'invalid', fields: errors }))
+    }
+    const { appendFile, mkdir } = await import('node:fs/promises')
+    const { dirname } = await import('node:path')
+    await mkdir(dirname(LEADS), { recursive: true })
+    await appendFile(LEADS, JSON.stringify({ ...lead, source: 'ferdz.io/free-credit-audit', at: new Date().toISOString() }) + '\n')
+    res.end(JSON.stringify({ ok: true }))
+  }
+  return {
+    name: 'credit-lead-api',
+    configureServer: (server) => void server.middlewares.use(handler),
+    configurePreviewServer: (server) => void server.middlewares.use(handler),
+  }
+}
+
 export default defineConfig({
-  plugins: [react(), tailwindcss(), usdJpyApi()],
+  plugins: [react(), tailwindcss(), usdJpyApi(), creditLeadApi()],
   resolve: { alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) } },
   server: { port: Number(process.env.PORT) || 4808 },
 })

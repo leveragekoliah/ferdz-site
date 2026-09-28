@@ -71,7 +71,7 @@ export default function Foundation({ showCta = true }: { showCta?: boolean }) {
         </p>
         {showCta && (
           <div className="flex flex-wrap gap-4 md:justify-end">
-            <Button href="https://trapncredit.getcredithelpnow.com/start">Get a free credit audit</Button>
+            <Button to="/free-credit-audit">Get a free credit audit</Button>
             <Button to="/businesses/credit" variant="ghost">How Trap N Credit works</Button>
           </div>
         )}

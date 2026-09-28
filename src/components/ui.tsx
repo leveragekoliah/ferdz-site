@@ -49,10 +49,12 @@ type BtnProps = {
   /** kept for older call sites — every button is the same pearl button now */
   variant?: 'solid' | 'ghost'
   size?: 'sm' | 'md' | 'lg'
+  /** external links open in a new tab unless this is false (funnel hand-offs stay in the same tab) */
+  newTab?: boolean
 }
 
 /** The site-wide Pearl Button (styles in index.css). Renders as a router Link or an <a>. */
-export function Button({ to, href, children, size = 'md' }: BtnProps) {
+export function Button({ to, href, children, size = 'md', newTab = true }: BtnProps) {
   const cls = `pearl-button ${size === 'sm' ? 'pearl-sm' : size === 'lg' ? 'pearl-lg' : ''}`
   const inner = (
     <span className="wrap">
@@ -63,15 +65,17 @@ export function Button({ to, href, children, size = 'md' }: BtnProps) {
       </span>
     </span>
   )
-  if (to)
+  // site-internal paths route without a page reload
+  const route = to ?? (href?.startsWith('/') ? href : undefined)
+  if (route)
     return (
-      <Link to={to} className={cls}>
+      <Link to={route} className={cls}>
         {inner}
       </Link>
     )
   const external = href?.startsWith('http')
   return (
-    <a href={href} className={cls} {...(external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}>
+    <a href={href} className={cls} {...(external && newTab ? { target: '_blank', rel: 'noopener noreferrer' } : {})}>
       {inner}
     </a>
   )

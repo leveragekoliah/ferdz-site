@@ -155,11 +155,11 @@ export const businesses: Business[] = [
     summary:
       'Personalized credit education and strategic support. We review your report, find inaccurate or questionable items, and build a clear plan toward cards, auto loans, homeownership and business funding. No quick fixes, no empty promises.',
     visual: 'card',
-    cta: { label: 'Get a free credit audit', url: 'https://trapncredit.getcredithelpnow.com/start' },
+    cta: { label: 'Get a free credit audit', url: '/free-credit-audit' },
     instagram: [
       { handle: 'trapncredit', title: 'Credit, explained on the feed.', shape: 'reel', codes: ['Dc1WmachCKP', 'Dc35l-OBEw6', 'Dc8_-ifNyNj', 'DdRgpvgNLSn', 'DdUSFA0NyiG', 'DdUTfF5h1qi', 'DdW02QBh-qr', 'Ddg8FVet1vZ'] },
     ],
-    secondaryCta: { label: 'Monitor your credit', url: 'https://myfreescorenow.com/enroll/?AID=EnchantedRetreatsLLC&PID=39252' },
+    secondaryCta: { label: 'Monitor your credit', url: 'https://creditheroscore.com/lp/285-ar/index.asp?GUID=I5U4A25ZILL6&SID=MKARES7S4&itemSelectV2=183&tGUID=3B72F26E-82EB-46FC-8A28-D548A5DA6A8F' },
     steps: [
       { title: 'Sign up', body: 'Share your basic info through the secure portal so we can pull your report.' },
       { title: 'Review', body: 'A credit specialist walks through your report with you and builds a plan.' },

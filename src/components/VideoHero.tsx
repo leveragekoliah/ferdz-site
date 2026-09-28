@@ -28,7 +28,11 @@ export default function VideoHero({ title, tagline, scrollHint = 'Scroll', scrub
   const [ready, setReady] = useState(false)
   const [reduced] = useState(() => window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false)
   const [src] = useState(() =>
-    window.matchMedia?.('(max-width: 768px)').matches ? '/video/hero-scrub-sm.mp4' : '/video/hero-scrub.mp4',
+    window.matchMedia?.('(max-aspect-ratio: 3/4)').matches
+      ? '/video/hero-scrub-9x16.mp4' // portrait phones: the dedicated 9:16 cut
+      : window.matchMedia?.('(max-width: 768px)').matches
+        ? '/video/hero-scrub-sm.mp4'
+        : '/video/hero-scrub.mp4',
   )
 
   useEffect(() => {
@@ -197,7 +201,10 @@ export default function VideoHero({ title, tagline, scrollHint = 'Scroll', scrub
 
   return (
     <section ref={sectionRef} className="relative h-[100dvh] w-full overflow-hidden bg-bg" aria-label="Intro">
-      <img src="/img/hero-poster.jpg" alt="" aria-hidden className="absolute inset-0 h-full w-full object-cover" />
+      <picture>
+        <source media="(max-aspect-ratio: 3/4)" srcSet="/img/hero-poster-9x16.jpg" />
+        <img src="/img/hero-poster.jpg" alt="" aria-hidden className="absolute inset-0 h-full w-full object-cover" />
+      </picture>
       <video
         ref={videoRef}
         src={src}
