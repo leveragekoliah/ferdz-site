@@ -9,8 +9,9 @@ import { MetallicCard } from '@/components/ui/metallic-card'
 import { InstagramGrid, TikTokFoodGrid } from '../components/SocialGrids'
 import AnimatedHeading from '@/components/AnimatedHeading'
 
-export default function BusinessPage() {
-  const { slug } = useParams()
+export default function BusinessPage({ slug: slugProp }: { slug?: string } = {}) {
+  const params = useParams()
+  const slug = slugProp ?? params.slug
   const b = getBusiness(slug)
   if (!b) return <Navigate to="/businesses" replace />
 
