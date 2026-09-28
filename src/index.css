@@ -1,0 +1,331 @@
+@import "tailwindcss";
+
+@theme {
+  --color-bg: #0c0b0a;
+  --color-surface: #161412;
+  --color-line: #2a2622;
+  --color-ink: #f4efe6;
+  --color-muted: #a39a8c;
+  --color-accent: #ff7a3d;
+  --color-accent-soft: #ff7a3d1f;
+  /* shadcn names used by components/ui/* */
+  --color-background: #0c0b0a;
+  --color-foreground: #f4efe6;
+  --color-card: #000000;
+  --color-card-foreground: #f4efe6;
+  --color-muted-foreground: #a39a8c;
+  --color-border: rgba(255, 255, 255, 0.1);
+  --font-display: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Inter", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Inter", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+html { scroll-behavior: smooth; }
+body {
+  background: var(--color-bg);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+::selection { background: var(--color-accent); color: var(--color-bg); }
+
+.font-display { font-weight: 800; letter-spacing: -0.02em; }
+
+.label {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+.container-x { max-width: 1200px; margin-inline: auto; padding-inline: 24px; }
+@media (min-width: 768px) { .container-x { padding-inline: 48px; } }
+
+/* 3D testimonials marquee (components/ui/3d-testimonails.tsx) */
+@theme inline {
+  --animate-marquee: marquee var(--duration) infinite linear;
+  --animate-marquee-vertical: marquee-vertical var(--duration) linear infinite;
+}
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(calc(-100% - var(--gap))); }
+}
+@keyframes marquee-vertical {
+  from { transform: translateY(0); }
+  to { transform: translateY(calc(-100% - var(--gap))); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .animate-marquee, .animate-marquee-vertical { animation: none; }
+  html { scroll-behavior: auto; }
+}
+
+
+/* ── Pearl Button — from "Pearl Button" by reuno-ui on 21st.dev ─────────────────
+   The original is a 25px / ~94px-tall showcase button. Every highlight, shadow and
+   radius here is multiplied by --s so smaller sizes keep the exact same pearl look
+   (at --s: 1 this is identical to the original). */
+.pearl-button {
+  --s: 0.6;
+  --bg: #080808;
+  outline: none;
+  cursor: pointer;
+  border: 0;
+  position: relative;
+  display: inline-block;
+  text-decoration: none;
+  border-radius: 100px;
+  background-color: var(--bg);
+  transition: all 0.2s ease;
+  box-shadow:
+    inset 0 calc(0.3rem * var(--s)) calc(0.9rem * var(--s)) rgba(255, 255, 255, 0.3),
+    inset 0 calc(-0.1rem * var(--s)) calc(0.3rem * var(--s)) rgba(0, 0, 0, 0.7),
+    inset 0 calc(-0.4rem * var(--s)) calc(0.9rem * var(--s)) rgba(255, 255, 255, 0.5),
+    0 calc(3rem * var(--s)) calc(3rem * var(--s)) rgba(0, 0, 0, 0.3),
+    0 calc(1rem * var(--s)) calc(1rem * var(--s)) calc(-0.6rem * var(--s)) rgba(0, 0, 0, 0.8);
+}
+.pearl-button.pearl-sm { --s: 0.45; }
+.pearl-button.pearl-lg { --s: 0.75; }
+.pearl-button .wrap {
+  font-size: calc(25px * var(--s));
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.7);
+  padding: calc(32px * var(--s)) calc(45px * var(--s));
+  border-radius: inherit;
+  position: relative;
+  overflow: hidden;
+  white-space: nowrap;
+  display: block;
+}
+.pearl-button .wrap .txt {
+  display: flex;
+  align-items: center;
+  gap: calc(12px * var(--s));
+  margin: 0;
+  transition: all 0.2s ease;
+  transform: translateY(2%);
+  -webkit-mask-image: linear-gradient(to bottom, white 40%, transparent);
+  mask-image: linear-gradient(to bottom, white 40%, transparent);
+}
+.pearl-button .wrap .txt span:nth-child(2) { display: none; }
+.pearl-button:hover .wrap .txt span:nth-child(1),
+.pearl-button:focus-visible .wrap .txt span:nth-child(1) { display: none; }
+.pearl-button:hover .wrap .txt span:nth-child(2),
+.pearl-button:focus-visible .wrap .txt span:nth-child(2) { display: inline-block; }
+.pearl-button .wrap::before,
+.pearl-button .wrap::after {
+  content: "";
+  position: absolute;
+  transition: all 0.3s ease;
+  pointer-events: none;
+}
+.pearl-button .wrap::before {
+  left: -15%;
+  right: -15%;
+  bottom: 25%;
+  top: -100%;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.12);
+}
+.pearl-button .wrap::after {
+  left: 6%;
+  right: 6%;
+  top: 12%;
+  bottom: 40%;
+  border-radius: calc(22px * var(--s)) calc(22px * var(--s)) 0 0;
+  box-shadow: inset 0 calc(10px * var(--s)) calc(8px * var(--s)) calc(-10px * var(--s)) rgba(255, 255, 255, 0.8);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.3) 0%, rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, 0) 100%);
+}
+.pearl-button:hover,
+.pearl-button:focus-visible {
+  box-shadow:
+    inset 0 calc(0.3rem * var(--s)) calc(0.5rem * var(--s)) rgba(255, 255, 255, 0.4),
+    inset 0 calc(-0.1rem * var(--s)) calc(0.3rem * var(--s)) rgba(0, 0, 0, 0.7),
+    inset 0 calc(-0.4rem * var(--s)) calc(0.9rem * var(--s)) rgba(255, 255, 255, 0.7),
+    0 calc(3rem * var(--s)) calc(3rem * var(--s)) rgba(0, 0, 0, 0.3),
+    0 calc(1rem * var(--s)) calc(1rem * var(--s)) calc(-0.6rem * var(--s)) rgba(0, 0, 0, 0.8);
+}
+.pearl-button:focus-visible { outline: 2px solid rgba(255, 255, 255, 0.5); outline-offset: 3px; }
+.pearl-button:hover .wrap::before { transform: translateY(-5%); }
+.pearl-button:hover .wrap::after { opacity: 0.4; transform: translateY(5%); }
+.pearl-button:hover .wrap .txt { transform: translateY(-4%); }
+.pearl-button:active {
+  transform: translateY(calc(4px * var(--s)));
+  box-shadow:
+    inset 0 calc(0.3rem * var(--s)) calc(0.5rem * var(--s)) rgba(255, 255, 255, 0.5),
+    inset 0 calc(-0.1rem * var(--s)) calc(0.3rem * var(--s)) rgba(0, 0, 0, 0.8),
+    inset 0 calc(-0.4rem * var(--s)) calc(0.9rem * var(--s)) rgba(255, 255, 255, 0.4),
+    0 calc(3rem * var(--s)) calc(3rem * var(--s)) rgba(0, 0, 0, 0.3),
+    0 calc(1rem * var(--s)) calc(1rem * var(--s)) calc(-0.6rem * var(--s)) rgba(0, 0, 0, 0.8);
+}
+@media (prefers-reduced-motion: reduce) {
+  .pearl-button, .pearl-button .wrap .txt, .pearl-button .wrap::before, .pearl-button .wrap::after { transition: none; }
+}
+
+/* ── Highlight card — from "Highlight Card" by beratberkayg on 21st.dev ────────────
+   Near-black gradient card, white/10 edge, glow orbs, hover sheen sweep, lift + tilt,
+   lit corners. Optional real background photo sits under a dark scrim so text stays
+   readable. Decorative motion only runs for visitors who allow motion. */
+@layer components {
+  .hl-card {
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+    border-radius: 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: linear-gradient(135deg, #010101, #090909 50%, #010101);
+    color: #fff;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+    transition: transform 0.5s ease, border-color 0.5s ease, box-shadow 0.5s ease;
+  }
+  .hl-card:hover {
+    border-color: rgba(255, 255, 255, 0.25);
+    box-shadow: 0 35px 60px -15px rgba(255, 255, 255, 0.05), 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+  }
+  .hl-card.hl-tilt:hover { transform: scale(1.05) rotate(-1deg); }
+  .hl-card.hl-tilt-soft:hover { transform: scale(1.015) rotate(-0.4deg); }
+  .hl-card > .hl-content { position: relative; z-index: 10; }
+  .hl-bg {
+    position: absolute; inset: 0; z-index: -2;
+    width: 100%; height: 100%; object-fit: cover;
+    transition: transform 0.7s ease;
+  }
+  .hl-card:hover .hl-bg { transform: scale(1.06); }
+  .hl-scrim { position: absolute; inset: 0; z-index: -1; }
+  .hl-decor { position: absolute; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; }
+  .hl-wash { position: absolute; inset: 0; background: linear-gradient(to top right, rgba(255,255,255,.05), rgba(255,255,255,.1)); opacity: .4; transition: opacity .5s; }
+  .hl-card:hover .hl-wash { opacity: .6; }
+  .hl-orb { position: absolute; bottom: -5rem; left: -5rem; width: 12rem; height: 12rem; border-radius: 9999px;
+    background: linear-gradient(to top right, rgba(255,255,255,.1), transparent); filter: blur(64px); opacity: .3; transition: all .7s; }
+  .hl-card:hover .hl-orb { opacity: .5; transform: scale(1.1); }
+  .hl-dot { position: absolute; border-radius: 9999px; background: rgba(255,255,255,.05); }
+  .hl-sheen { position: absolute; inset: 0; background: linear-gradient(to right, transparent, rgba(255,255,255,.06), transparent);
+    transform: translateX(100%) skewX(-12deg); transition: transform 1s ease; }
+  .hl-card:hover .hl-sheen { transform: translateX(-200%) skewX(-12deg); }
+  .hl-corner { position: absolute; width: 5rem; height: 5rem; opacity: 0; transition: opacity .5s; pointer-events: none; z-index: 1; }
+  .hl-corner.tl { top: 0; left: 0; background: linear-gradient(to bottom right, rgba(255,255,255,.1), transparent); border-bottom-right-radius: 1.5rem; }
+  .hl-corner.br { bottom: 0; right: 0; background: linear-gradient(to top left, rgba(255,255,255,.1), transparent); border-top-left-radius: 1.5rem; }
+  .hl-card:hover .hl-corner { opacity: 1; }
+  .hl-title { background: linear-gradient(to right, #fff, #f3f4f6, #fff); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .hl-rule { height: 2px; width: 33%; border-radius: 9999px; background: linear-gradient(to right, transparent, #fff, transparent); transition: all .5s; }
+  .hl-card:hover .hl-rule { width: 50%; height: 4px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hl-card, .hl-bg, .hl-sheen, .hl-orb { transition: none !important; }
+  .hl-card.hl-tilt:hover, .hl-card.hl-tilt-soft:hover { transform: none; }
+}
+
+/* ── Metallic card (components/ui/metallic-card.tsx) — styles moved out of styled-jsx ── */
+.metal-wrap {
+  --gradient-rotation: 0deg;
+  --gradient-position-x: 50%;
+  --gradient-position-y: 50%;
+  --rotate-x: 0deg;
+  --rotate-y: 0deg;
+  display: grid;
+  place-items: center;
+  perspective: 1200px;
+  font-family: ui-sans-serif, system-ui, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+.metal-card {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1.586;
+  border-radius: var(--border-radius);
+  transform: rotateX(var(--rotate-x)) rotateY(var(--rotate-y));
+  transform-style: preserve-3d;
+  transition: transform 0.1s ease-out, box-shadow 0.2s ease-out;
+  overflow: hidden;
+  box-shadow: 0 10px 50px rgba(0, 0, 0, 0.25), inset -1px -1px 2px rgba(0, 0, 0, 0.3), inset 1px 1px 2px rgba(255, 255, 255, 0.3);
+  background:
+    radial-gradient(ellipse 160% 120% at var(--gradient-position-x) var(--gradient-position-y), transparent 0%, rgba(0, 0, 0, 1) 100%),
+    conic-gradient(from var(--gradient-rotation) at 50% 50%, rgba(0, 0, 0, 0.6) -120deg, rgba(255, 255, 255, 0.4) 9deg, rgba(0, 0, 0, 0.4) 60deg,
+      rgba(0, 0, 0, 0.06) 107deg, rgba(0, 0, 0, 0.3) 131deg, rgba(0, 0, 0, 0) 188deg, rgba(0, 0, 0, 0.6) 240deg, rgba(255, 255, 255, 0.4) 367deg),
+    var(--bg-card);
+}
+.metal-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: var(--border-radius);
+  filter: var(--noise-filter);
+  opacity: 0.25;
+  z-index: 1;
+}
+.metal-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: var(--border-radius);
+  background: var(--bg-card);
+  mix-blend-mode: color;
+  z-index: 2;
+}
+.metal-content {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  display: grid;
+  grid-template-rows: auto 1fr auto auto;
+  padding: 6% 7%;
+  color: var(--ink);
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.3), 0 8px 22px var(--glow-1), 0 2px 10px var(--glow-2);
+  -webkit-font-smoothing: antialiased;
+}
+/* glass panel for readability (original) */
+.metal-content::before {
+  content: "";
+  position: absolute;
+  inset: 0.6rem;
+  border-radius: calc(var(--border-radius) - 8px);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02)),
+    radial-gradient(80% 40% at 50% 0%, rgba(255, 255, 255, 0.06), transparent 60%);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(2px) saturate(1.07);
+  z-index: -1;
+}
+.metal-top { display: flex; align-items: center; justify-content: space-between; }
+.metal-brand { display: flex; align-items: center; gap: 0.6rem; }
+.metal-logo { height: clamp(28px, 9cqw, 40px); width: auto; border-radius: 6px; filter: drop-shadow(0 1px 4px rgba(0, 0, 0, 0.35)); }
+.metal-wordmark { font-weight: 800; font-size: clamp(0.8rem, 0.6rem + 0.8vw, 1.05rem); letter-spacing: 0.14em; text-transform: uppercase; }
+.metal-nfc { width: clamp(20px, 6%, 28px); height: auto; color: var(--ink-sub); }
+.metal-chip {
+  align-self: center;
+  width: 15%;
+  aspect-ratio: 1.3;
+  border-radius: 7px;
+  background: linear-gradient(135deg, #e9d9a6, #b89a4f 45%, #efe2b6 60%, #a88a42);
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.25), 0 1px 2px rgba(0, 0, 0, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+.metal-chip span {
+  position: absolute;
+  inset: 22% 18%;
+  border: 1px solid rgba(0, 0, 0, 0.3);
+  border-radius: 3px;
+}
+.metal-number {
+  margin: 0 0 4%;
+  display: flex;
+  gap: 4%;
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-weight: 700;
+  font-size: clamp(1rem, 0.7rem + 1.4vw, 1.55rem);
+  letter-spacing: 0.08em;
+  font-variant-numeric: tabular-nums;
+}
+.metal-bottom { display: flex; align-items: flex-end; justify-content: space-between; gap: 1rem; }
+.metal-name {
+  margin: 0;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-size: clamp(0.8rem, 0.6rem + 0.8vw, 1.05rem);
+  -webkit-text-stroke: 0.25px rgba(0, 0, 0, 0.25);
+}
+.metal-valid { display: flex; align-items: center; gap: 0.4rem; }
+.metal-valid-label { font-size: 0.5rem; line-height: 1.05; font-weight: 700; color: var(--ink-sub); }
+.metal-valid-date { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-weight: 700; font-size: clamp(0.8rem, 0.65rem + 0.5vw, 1rem); }
+@media (prefers-reduced-motion: reduce) {
+  .metal-card { transition: none; }
+}
