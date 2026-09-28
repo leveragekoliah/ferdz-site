@@ -18,7 +18,7 @@ const clamp = (v: number, min: number, max: number) => Math.min(max, Math.max(mi
 const DOWN_KEYS = ['ArrowDown', 'PageDown', ' ', 'Spacebar']
 const UP_KEYS = ['ArrowUp', 'PageUp']
 
-export default function VideoHero({ title, tagline, scrollHint = 'Scroll', scrubDistance = 2800 }: Props) {
+export default function VideoHero({ title, tagline, scrollHint = 'Scroll', scrubDistance = 1600 }: Props) {
   const sectionRef = useRef<HTMLElement>(null)
   const videoRef = useRef<HTMLVideoElement>(null)
   const titleRef = useRef<HTMLDivElement>(null)
@@ -27,6 +27,11 @@ export default function VideoHero({ title, tagline, scrollHint = 'Scroll', scrub
   const barRef = useRef<HTMLDivElement>(null)
   const [ready, setReady] = useState(false)
   const [reduced] = useState(() => window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false)
+  // Touchscreens (phones, tablets without a mouse) use native scrolling through a tall pinned section
+  // instead of the scroll lock: iOS/Android fight a locked body (address bar, momentum, rubber-band).
+  const [touchMode] = useState(
+    () => (window.matchMedia?.('(pointer: coarse)').matches ?? false) && !(window.matchMedia?.('(pointer: fine)').matches ?? false),
+  )
   const [src] = useState(() =>
     window.matchMedia?.('(max-aspect-ratio: 3/4)').matches
       ? '/video/hero-scrub-9x16.mp4' // portrait phones: the dedicated 9:16 cut
@@ -119,6 +124,38 @@ export default function VideoHero({ title, tagline, scrollHint = 'Scroll', scrub
       }
     }
 
+    if (touchMode) {
+      const onScroll = () => {
+        const r = section.getBoundingClientRect()
+        const travel = r.height - window.innerHeight
+        target = travel > 0 ? clamp(-r.top / travel, 0, 1) : 0
+        if (target > 0.001) started = true
+      }
+      // iOS may not buffer until a user gesture: nudge loading on the first touch
+      const kick = () => {
+        const q = video.play()
+        if (q && typeof q.then === 'function') q.then(() => video.pause()).catch(() => {})
+      }
+      window.addEventListener('scroll', onScroll, { passive: true })
+      window.addEventListener('touchstart', kick, { passive: true, once: true })
+      onScroll()
+      const frameT = () => {
+        current += (target - current) * 0.2
+        if (Math.abs(target - current) < 0.0005) current = target
+        if (duration > 0) seekTo(current * duration)
+        paint()
+        rafId = requestAnimationFrame(frameT)
+      }
+      rafId = requestAnimationFrame(frameT)
+      return () => {
+        video.removeEventListener('loadeddata', onLoaded)
+        video.removeEventListener('seeked', onSeeked)
+        window.removeEventListener('scroll', onScroll)
+        window.removeEventListener('touchstart', kick)
+        cancelAnimationFrame(rafId)
+      }
+    }
+
     if (window.scrollY <= 0) lock()
     else {
       target = current = 1
@@ -165,9 +202,25 @@ export default function VideoHero({ title, tagline, scrollHint = 'Scroll', scrub
     window.addEventListener('keydown', onKey)
 
     const frame = () => {
-      current += (target - current) * 0.16
+      current += (target - current) * 0.22
       if (Math.abs(target - current) < 0.0005) current = target
       if (duration > 0) seekTo(current * duration)
+      paint()
+      rafId = requestAnimationFrame(frame)
+    }
+    rafId = requestAnimationFrame(frame)
+    return () => {
+      video.removeEventListener('loadeddata', onLoaded)
+      video.removeEventListener('seeked', onSeeked)
+      window.removeEventListener('wheel', onWheel)
+      window.removeEventListener('touchstart', onTouchStart)
+      window.removeEventListener('touchmove', onTouchMove)
+      window.removeEventListener('keydown', onKey)
+      cancelAnimationFrame(rafId)
+      unlock()
+    }
+
+    function paint() {
       if (videoRef.current) videoRef.current.style.transform = `scale(${1 + current * 0.06})`
       if (titleRef.current) {
         const t = 1 - clamp(current / 0.35, 0, 1)
@@ -183,24 +236,17 @@ export default function VideoHero({ title, tagline, scrollHint = 'Scroll', scrub
         taglineRef.current.style.filter = `blur(${(1 - t) * 8}px)`
       }
       if (barRef.current) barRef.current.style.transform = `scaleX(${current})`
-      rafId = requestAnimationFrame(frame)
     }
-    rafId = requestAnimationFrame(frame)
-
-    return () => {
-      video.removeEventListener('loadeddata', onLoaded)
-      video.removeEventListener('seeked', onSeeked)
-      window.removeEventListener('wheel', onWheel)
-      window.removeEventListener('touchstart', onTouchStart)
-      window.removeEventListener('touchmove', onTouchMove)
-      window.removeEventListener('keydown', onKey)
-      cancelAnimationFrame(rafId)
-      unlock()
-    }
-  }, [scrubDistance, reduced])
+  }, [scrubDistance, reduced, touchMode])
 
   return (
-    <section ref={sectionRef} className="relative h-[100dvh] w-full overflow-hidden bg-bg" aria-label="Intro">
+    <section
+      ref={sectionRef}
+      className="relative w-full bg-bg"
+      style={{ height: touchMode && !reduced ? '200svh' : '100dvh' }}
+      aria-label="Intro"
+    >
+      <div className="sticky top-0 h-[100dvh] w-full overflow-hidden">
       <picture>
         <source media="(max-aspect-ratio: 3/4)" srcSet="/img/hero-poster-9x16.jpg" />
         <img src="/img/hero-poster.jpg" alt="" aria-hidden className="absolute inset-0 h-full w-full object-cover" />
@@ -251,6 +297,7 @@ export default function VideoHero({ title, tagline, scrollHint = 'Scroll', scrub
 
       <div className="absolute inset-x-0 bottom-0 h-0.5 bg-ink/10">
         <div ref={barRef} className="h-full w-full origin-left bg-accent" style={{ transform: `scaleX(${reduced ? 1 : 0})` }} />
+      </div>
       </div>
     </section>
   )
